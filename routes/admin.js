@@ -348,7 +348,7 @@ adminRouter.get("/admin/get-order-status/:id", async (req, res) => {
 //.....................................................................................................................
 adminRouter.post("/transaction-initialize", async (req, res) => {
   // const sk_key = process.env.PAYMENT_SECRET_KEY;
-  const sk_key = process.env.PAYMENT_TEST_SECRET_KEY;
+  const sk_key = process.env.PAYMENT_SECRET_KEY;
 
 
 
