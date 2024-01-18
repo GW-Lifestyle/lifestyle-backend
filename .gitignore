@@ -1,0 +1,98 @@
+# Node.js
+node_modules/
+npm-debug.log
+*.log
+*.lock
+
+# Express
+.env
+
+# MongoDB
+data/
+dump/
+*.db
+
+# VS Code
+.vscode/
+.settings/
+
+# Logs
+logs/
+*.log
+
+# Dependency directories
+.jenkins/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# Linux
+*~
+
+# Editor directories and files
+.idea/
+*.suo
+*.ntvs*
+
+# Build results
+build/
+dist/
+out/
+*.pid
+*.log
+
+# Dependency directories
+.env
+
+# Docker
+docker-compose.override.yml
+DockerDebug.log
+node_modules/
+npm-debug.log
+*.pem
+*.key
+*.log
+
+# Anything in .gitignore is ignored!
+# More details: https://git-scm.com/docs/gitignore
+
+
+# node dependencies
+node_modules/
+jspm_packages/
+bower_components/
+web_modules/
+
+npm-debug.log
+yarn-error.lo
+yarn-debug.log
+lerna-debug.log
+node_modules/**/node_modules
+node_modules/
+.secrets.json
+dist/
+.DS_Store
+serverKey.json
+config/
+
+# dotenv environment variables
+.env
+.env.test
+.custom-env
+
+# code editor related files
+.vscode-test
+.vscode
+
+# cache files
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
+.eslintcache
+.cache
+.parcel-cache
+.npm
