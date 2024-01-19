@@ -199,6 +199,27 @@ adminRouter.post("/admin/change-order-status", admin, async (req, res) => {
   }
 });
 
+adminRouter.post("/order/delete", async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    let order = await findAndDeleteOrder(orderId);
+    res.status(200).json(order);
+  } catch (e) {
+    res.json(e.message);
+    console.log(`Failed to delete order ${e}`);
+  }
+
+  async function findAndDeleteOrder(orderId) {
+    let order = await Order.findById(orderId);
+    if (!order) {
+      return new Error(`Order not found`)
+    }
+    order = await Order.findByIdAndDelete(orderId);
+    order = await order.save();
+    return order;
+  }
+});
+
 
 adminRouter.get("/admin/get-products", async (req, res) => {
   try {
@@ -549,5 +570,7 @@ adminRouter.get('/user/notifications/:userId', async (req, res) => {
     return notifications;
   }
 });
+
+
 
 module.exports = adminRouter;
