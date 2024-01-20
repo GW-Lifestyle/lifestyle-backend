@@ -145,7 +145,7 @@ userRouter.post("/api/add-to-cart", auth, async (req, res) => {
 });
 
 
-userRouter.post("/api/order", auth, async (req, res) => {
+userRouter.post("/order/placeOrder", auth, async (req, res) => {
   let products = [];
   let outOfStock = [];
   try {

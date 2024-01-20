@@ -201,21 +201,25 @@ adminRouter.post("/admin/change-order-status", admin, async (req, res) => {
 
 adminRouter.post("/order/delete", async (req, res) => {
   try {
+
     const { orderId } = req.body;
-    let order = await findAndDeleteOrder(orderId);
-    res.status(200).json(order);
+    console.log(`Delete ID called ${orderId}`);
+
+    await findAndDeleteOrder(orderId);
+    res.status(200).json(`Success`);
+
+
   } catch (e) {
-    res.json(e.message);
+    res.status(500).json(e.message);
     console.log(`Failed to delete order ${e}`);
   }
 
   async function findAndDeleteOrder(orderId) {
     let order = await Order.findById(orderId);
     if (!order) {
-      return new Error(`Order not found`)
+      throw new Error(`Order not found`)
     }
     order = await Order.findByIdAndDelete(orderId);
-    order = await order.save();
     return order;
   }
 });
@@ -286,16 +290,45 @@ adminRouter.get("/admin/get-orders", admin, async (req, res) => {
   }
 });
 
-adminRouter.get("/admin/get-failed-orders", admin, async (req, res) => {
+adminRouter.get("/admin/get-disapproved-orders", admin, async (req, res) => {
   try {
     const orders = await Order.find({});
-    failedOrders = orders.filter(order => order.paid == false);
-    failedOrders.forEach(order => {
-      Order.findByIdAndDelete(order.id);
-    });
+
+    let disapprovedOrders = await getDisapprovedOrders(orders);
+
+    res.status(200).json(disapprovedOrders);
+
+
   } catch (e) {
     res.status(500).json({ error: e.message });
-    console.log(`Failed to delete failed orders ${e}`);
+    console.log(`Failed to get disapproved orders ${e}`);
+  }
+
+  async function getDisapprovedOrders(orders) {
+
+    let disapprovedOrders = orders.filter(order => order.paid == false);
+    return disapprovedOrders;
+
+  }
+});
+
+adminRouter.post("/admin/disapprovedOrder/delete/:orderId", admin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    await findAndDeleteDisapprovedOrder(orderId)
+
+    res.status(200).json('Ordeer deleted successfully');
+
+
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+    console.log(`Failed to delete disapproved orders ${e}`);
+  }
+
+  async function findAndDeleteDisapprovedOrder(orderId) {
+    await Order.findByIdAndDelete(orderId);
+
   }
 });
 
@@ -367,12 +400,26 @@ adminRouter.get("/admin/get-order-status/:id", async (req, res) => {
   }
 });
 //.....................................................................................................................
+axios.interceptors.response.use(
+  response => {
+    console.log(`Interceptor response: ${response}`);
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+  },
+  error => {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    if (error.code === 'ECONNABORTED') {
+      console.log('Request timed out');
+    }
+    return Promise.reject(error);
+  }
+);
+
 adminRouter.post("/transaction-initialize", async (req, res) => {
+  const sk_key = process.env.PAYMENT_TEST_SECRET_KEY;
   // const sk_key = process.env.PAYMENT_SECRET_KEY;
-  const sk_key = process.env.PAYMENT_SECRET_KEY;
-
-
-
   try {
     const response = await axios.post(
       "https://api.paystack.co/transaction/initialize",
@@ -390,13 +437,11 @@ adminRouter.post("/transaction-initialize", async (req, res) => {
     );
     res.status(200).json(response.data);
   } catch (e) {
-    // const result = e.data;
-    // res.sendStatus(e.response.status ? 700 : e.response.status);
-    res.sendStatus(e.status);
-
+    res.json(`Failed to initialize payment ${e}`);
     console.log(e);
   }
 });
+
 //.....................................................................................................................
 
 adminRouter.post("/verify-payment", async (req, res) => {

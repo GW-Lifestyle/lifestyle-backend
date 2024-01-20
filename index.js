@@ -43,18 +43,22 @@ mongoose
   .catch((e) => {
     console.log("failed because: " + e);
   });
+try {
+  io.on('connection', (socket) => {
+    console.log('a user is connected');
+  });
 
-io.on('connection', (socket) => {
-  console.log('a user is connected');
-});
+  User.watch([], { fullDocument: 'updateLookup' }).on('change', (change) => {
+    // if (change.updateDescription && change.updateDescription.updatedFields.notifications) {
+    let emited = io.emit('notifi_cations', change.fullDocument.notifications);
+    console.log(`This was emited:` + emited);
+    // }
+    console.log('Full Document: ' + change.fullDocument.notifications);
+  });
+} catch (e) {
+  console.log(`Socket connection encountered an error: ${e}`);
+}
 
-User.watch([], { fullDocument: 'updateLookup' }).on('change', (change) => {
-  // if (change.updateDescription && change.updateDescription.updatedFields.notifications) {
-  let emited = io.emit('notifi_cations', change.fullDocument.notifications);
-  console.log(`This was emited:` + emited);
-  // }
-  console.log('Full Document: ' + change.fullDocument.notifications);
-});
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`"Connected at port: ${PORT} period "`);
