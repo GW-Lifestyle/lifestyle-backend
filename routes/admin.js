@@ -452,8 +452,8 @@ axios.interceptors.response.use(
 );
 
 adminRouter.post("/transaction-initialize", async (req, res) => {
-  const sk_key = process.env.PAYMENT_TEST_SECRET_KEY;
-  // const sk_key = process.env.PAYMENT_SECRET_KEY;
+  // const sk_key = process.env.PAYMENT_TEST_SECRET_KEY;
+  const sk_key = process.env.PAYMENT_SECRET_KEY;
   try {
     const response = await axios.post(
       "https://api.paystack.co/transaction/initialize",
