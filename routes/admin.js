@@ -170,19 +170,49 @@ adminRouter.post("/admin/add/fcmtoken", async (req, res) => {
   }
 });
 
-adminRouter.post("/admin/change-order-status", admin, async (req, res) => {
+// adminRouter.post("/admin/change-order-status", admin, async (req, res) => {
+//   try {
+//     const { id, status } = req.body;
+
+//     console.log(`Passed status`);
+//     let order = await findOrderById(id);
+//     order.status = updateOrderStatus(status)
+
+//     order = await order.save();
+//     res.status(201).json(order);
+
+//   }
+//   catch (e) {
+//     console.log(`Failed to update status: ${e}`);
+//   }
+
+//   async function findOrderById(id) {
+//     let order = await Order.findById(id);
+//     if (!order) {
+//       res.status(404).json('Failed to update status. Order not found in database');
+//     }
+//     return order;
+//   }
+
+//   function updateOrderStatus(status) {
+//     return status
+//   }
+// });
+
+adminRouter.post("/admin/change-order-status", async (req, res) => {
   try {
     const { id, status } = req.body;
 
-    console.log(`Passed status`);
+    console.log(`Passed status ${status}`);
     let order = await findOrderById(id);
     order.status = updateOrderStatus(status)
 
     order = await order.save();
-    res.status(201).json(order);
+    res.status(200).json(order);
 
   }
   catch (e) {
+    res.status(500).json(e.message);
     console.log(`Failed to update status: ${e}`);
   }
 
@@ -195,10 +225,14 @@ adminRouter.post("/admin/change-order-status", admin, async (req, res) => {
   }
 
   function updateOrderStatus(status) {
+    if (status < 0) {
+      console.log(`Status not defined: ${status}`);
+      throw new Error(`Status not defined`)
+
+    }
     return status
   }
 });
-
 adminRouter.post("/order/delete", async (req, res) => {
   try {
 
